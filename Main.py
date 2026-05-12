@@ -2,7 +2,7 @@ import json
 import os
 import denuncias
 
-ARCHIVO_DATOS = "datos.json"
+ARCHIVO_DATOS = os.path.join("datos", "datos.json")
 
 def cargar_datos():
     if not os.path.exists(ARCHIVO_DATOS):
