@@ -1,16 +1,17 @@
 from autenticacion.autorizacion import asegurar_autoridad_demo
 from autenticacion.inicio_sesion import iniciar_sesion_usuario
 from autenticacion.registro import registrar_usuario
+from denuncias.actualizar_estado import actualizar_estado_denuncia
 from denuncias.crear_denuncia import crear_denuncia
 from denuncias.denuncias_publicas import obtener_denuncias_publicas
-from denuncias.listar_denuncias import listar_denuncias_por_usuario
+from denuncias.listar_denuncias import listar_denuncias_por_usuario, listar_todas_las_denuncias
 from mensajes.buzon import obtener_denuncias_buzon, obtener_autoridad_destinatario
 from mensajes.enviar_mensaje import enviar_mensaje
 from mensajes.listar_mensajes import listar_mensajes_por_denuncia, marcar_mensajes_leidos
 from menus.menu_autoridad import menu_autoridad
 from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
-from nucleo.constantes import TIPOS_DENUNCIA
+from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
 from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha
 import nucleo.sesion as sesion
@@ -57,6 +58,61 @@ def ejecutar():
             opcion = menu_autoridad()
             if opcion == "3":
                 cerrar_sesion()
+            elif opcion == "1":
+                limpiar_pantalla()
+                print("DENUNCIAS REGISTRADAS")
+
+                denuncias = listar_todas_las_denuncias()
+                if not denuncias:
+                    print("No hay denuncias registradas.")
+                    pausa()
+                    continue
+
+                for indice, denuncia in enumerate(denuncias, start=1):
+                    fecha_creada = formatear_fecha(denuncia.get("creada_en"))
+                    print(
+                        f"{indice}. {denuncia.get('titulo')} | {denuncia.get('tipo')} | "
+                        f"Estado: {denuncia.get('estado')} | Creada: {fecha_creada}"
+                    )
+
+                seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
+                if not seleccion.isdigit() or int(seleccion) == 0:
+                    continue
+
+                indice = int(seleccion) - 1
+                if indice < 0 or indice >= len(denuncias):
+                    print("Opcion invalida.")
+                    pausa()
+                    continue
+
+                denuncia = denuncias[indice]
+                limpiar_pantalla()
+                print("DETALLE DE DENUNCIA")
+                print(f"Titulo: {denuncia.get('titulo')}")
+                print(f"Usuario: {denuncia.get('nombre_usuario')}")
+                print(f"Ciudad/Provincia: {denuncia.get('ciudad_provincia')}")
+                print(f"Fecha del evento: {denuncia.get('fecha_evento')}")
+                print(f"Descripcion: {denuncia.get('descripcion')}")
+                print(f"Estado actual: {denuncia.get('estado')}")
+
+                print("\nEstados disponibles:")
+                for indice_estado, estado in enumerate(ESTADOS_DENUNCIA, start=1):
+                    print(f"{indice_estado}. {estado}")
+
+                opcion_estado = input("Seleccione nuevo estado (0 para mantener): ").strip()
+                if not opcion_estado.isdigit() or int(opcion_estado) == 0:
+                    continue
+
+                indice_estado = int(opcion_estado) - 1
+                if indice_estado < 0 or indice_estado >= len(ESTADOS_DENUNCIA):
+                    print("Opcion invalida.")
+                    pausa()
+                    continue
+
+                nuevo_estado = ESTADOS_DENUNCIA[indice_estado]
+                ok, _, mensaje = actualizar_estado_denuncia(denuncia.get("id"), nuevo_estado)
+                print(mensaje)
+                pausa()
             elif opcion == "2":
                 limpiar_pantalla()
                 print("BUZON DE MENSAJES")
