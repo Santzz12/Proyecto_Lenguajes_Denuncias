@@ -5,7 +5,9 @@ from nucleo.validaciones import (
     validar_texto_obligatorio,
     validar_fecha_evento,
     validar_tipo_denuncia,
+    validar_ciudad_provincia,
     normalizar_fecha_evento,
+    normalizar_ciudad_provincia,
 )
 
 
@@ -25,11 +27,16 @@ def crear_denuncia(datos_denuncia):
     if not ok:
         return False, None, mensaje
 
+    ok, mensaje = validar_ciudad_provincia(datos_denuncia.get("ciudad_provincia"))
+    if not ok:
+        return False, None, mensaje
+
     ok, mensaje = validar_fecha_evento(datos_denuncia.get("fecha_evento"))
     if not ok:
         return False, None, mensaje
 
     fecha_evento = normalizar_fecha_evento(datos_denuncia.get("fecha_evento"))
+    ciudad_provincia = normalizar_ciudad_provincia(datos_denuncia.get("ciudad_provincia"))
 
     ok, mensaje = validar_tipo_denuncia(datos_denuncia.get("tipo"), TIPOS_DENUNCIA)
     if not ok:
@@ -42,7 +49,7 @@ def crear_denuncia(datos_denuncia):
         "titulo": datos_denuncia.get("titulo"),
         "descripcion": datos_denuncia.get("descripcion"),
         "fecha_evento": fecha_evento,
-        "ciudad_provincia": datos_denuncia.get("ciudad_provincia"),
+        "ciudad_provincia": ciudad_provincia,
         "tipo": datos_denuncia.get("tipo"),
         "es_publica": bool(datos_denuncia.get("es_publica")),
         "estado": ESTADOS_DENUNCIA[0],

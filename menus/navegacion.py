@@ -1,17 +1,24 @@
+from getpass import getpass
+
 from autenticacion.autorizacion import asegurar_autoridad_demo
 from autenticacion.inicio_sesion import iniciar_sesion_usuario
 from autenticacion.registro import registrar_usuario
 from denuncias.actualizar_estado import actualizar_estado_denuncia
 from denuncias.crear_denuncia import crear_denuncia
 from denuncias.denuncias_publicas import obtener_denuncias_publicas
+from denuncias.filtros import filtrar_por_tipo_estado
 from denuncias.listar_denuncias import listar_denuncias_por_usuario, listar_todas_las_denuncias
 from mensajes.buzon import obtener_denuncias_buzon, obtener_autoridad_destinatario
 from mensajes.enviar_mensaje import enviar_mensaje
-from mensajes.listar_mensajes import listar_mensajes_por_denuncia, marcar_mensajes_leidos
+from mensajes.listar_mensajes import (
+    listar_mensajes_por_denuncia,
+    marcar_mensajes_leidos,
+    contar_no_leidos,
+)
 from menus.menu_autoridad import menu_autoridad
 from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
-from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA
+from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA, PROVINCIAS
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
 from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha
 import nucleo.sesion as sesion
@@ -29,7 +36,7 @@ def ejecutar():
                 limpiar_pantalla()
                 print("INICIO DE SESION")
                 nombre_usuario = input("Nombre de usuario: ").strip()
-                clave = input("Clave: ")
+                clave = getpass("Clave: ")
                 ok, usuario, mensaje = iniciar_sesion_usuario(nombre_usuario, clave)
                 if ok:
                     iniciar_sesion(usuario)
@@ -40,7 +47,7 @@ def ejecutar():
                 limpiar_pantalla()
                 print("REGISTRO DE USUARIO")
                 nombre_usuario = input("Nombre de usuario: ").strip()
-                clave = input("Clave (minimo 6 caracteres): ")
+                clave = getpass("Clave (minimo 6 caracteres): ")
                 ok, usuario, mensaje = registrar_usuario(nombre_usuario, clave)
                 if ok:
                     iniciar_sesion(usuario)
@@ -55,7 +62,8 @@ def ejecutar():
             continue
 
         if es_autoridad():
-            opcion = menu_autoridad()
+            no_leidos = contar_no_leidos(sesion.usuario_actual.get("id"))
+            opcion = menu_autoridad(no_leidos)
             if opcion == "3":
                 cerrar_sesion()
             elif opcion == "1":
@@ -63,6 +71,29 @@ def ejecutar():
                 print("DENUNCIAS REGISTRADAS")
 
                 denuncias = listar_todas_las_denuncias()
+                print("\nFiltro por tipo:")
+                print("0. Todos")
+                for indice_tipo, tipo_opcion in enumerate(TIPOS_DENUNCIA, start=1):
+                    print(f"{indice_tipo}. {tipo_opcion}")
+                opcion_tipo = input("Seleccione: ").strip()
+                tipo_filtro = None
+                if opcion_tipo.isdigit() and int(opcion_tipo) > 0:
+                    indice_tipo = int(opcion_tipo) - 1
+                    if 0 <= indice_tipo < len(TIPOS_DENUNCIA):
+                        tipo_filtro = TIPOS_DENUNCIA[indice_tipo]
+
+                print("\nFiltro por estado:")
+                print("0. Todos")
+                for indice_estado, estado_opcion in enumerate(ESTADOS_DENUNCIA, start=1):
+                    print(f"{indice_estado}. {estado_opcion}")
+                opcion_estado = input("Seleccione: ").strip()
+                estado_filtro = None
+                if opcion_estado.isdigit() and int(opcion_estado) > 0:
+                    indice_estado = int(opcion_estado) - 1
+                    if 0 <= indice_estado < len(ESTADOS_DENUNCIA):
+                        estado_filtro = ESTADOS_DENUNCIA[indice_estado]
+
+                denuncias = filtrar_por_tipo_estado(denuncias, tipo_filtro, estado_filtro)
                 if not denuncias:
                     print("No hay denuncias registradas.")
                     pausa()
@@ -170,14 +201,25 @@ def ejecutar():
                 pausa()
             continue
 
-        opcion = menu_usuario()
+        no_leidos = contar_no_leidos(sesion.usuario_actual.get("id"))
+        opcion = menu_usuario(no_leidos)
         if opcion == "1":
             limpiar_pantalla()
             print("NUEVA DENUNCIA")
             titulo = input("Titulo: ").strip()
             descripcion = input("Descripcion: ").strip()
             fecha_evento = input("Fecha del evento (DD-MM-AAAA): ").strip()
-            ciudad_provincia = input("Ciudad/Provincia: ").strip()
+            print("Ciudad/Provincia:")
+            for indice, provincia in enumerate(PROVINCIAS, start=1):
+                print(f"{indice}. {provincia}")
+            opcion_provincia = input("Seleccione (numero) o escriba el nombre: ").strip()
+            ciudad_provincia = None
+            if opcion_provincia.isdigit():
+                indice = int(opcion_provincia)
+                if 1 <= indice <= len(PROVINCIAS):
+                    ciudad_provincia = PROVINCIAS[indice - 1]
+            else:
+                ciudad_provincia = opcion_provincia
 
             print("Tipo de denuncia:")
             for indice, tipo in enumerate(TIPOS_DENUNCIA, start=1):

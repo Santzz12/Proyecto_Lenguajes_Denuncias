@@ -15,6 +15,22 @@ def fecha_iso():
 	return datetime.now().isoformat(timespec="seconds")
 
 
+def parsear_fecha(fecha_texto):
+	if not fecha_texto:
+		return None
+
+	for formato in ("%d-%m-%Y", "%Y-%m-%d"):
+		try:
+			return datetime.strptime(fecha_texto, formato)
+		except ValueError:
+			continue
+
+	try:
+		return datetime.fromisoformat(fecha_texto)
+	except ValueError:
+		return None
+
+
 def formatear_fecha(fecha_texto):
 	if not fecha_texto:
 		return ""

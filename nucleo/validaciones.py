@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from nucleo.constantes import PROVINCIAS
+
 def normalizar_nombre_usuario(nombre_usuario):
 	return (nombre_usuario or "").strip().lower()
 
@@ -70,3 +72,26 @@ def validar_tipo_denuncia(tipo, tipos_validos):
 	if tipo not in tipos_validos:
 		return False, "El tipo de denuncia no es valido."
 	return True, ""
+
+
+def validar_ciudad_provincia(ciudad_provincia):
+	texto = (ciudad_provincia or "").strip()
+	if not texto:
+		return False, "La ciudad/provincia es obligatoria."
+
+	if texto.lower() not in [p.lower() for p in PROVINCIAS]:
+		return False, "La ciudad/provincia no es valida."
+
+	return True, ""
+
+
+def normalizar_ciudad_provincia(ciudad_provincia):
+	texto = (ciudad_provincia or "").strip()
+	if not texto:
+		return None
+
+	for provincia in PROVINCIAS:
+		if provincia.lower() == texto.lower():
+			return provincia
+
+	return None
