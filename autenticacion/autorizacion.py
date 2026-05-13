@@ -1,6 +1,6 @@
 from nucleo.constantes import RUTA_USUARIOS
 from nucleo.persistencia import leer_lista_json, guardar_lista_json
-from nucleo.utilidades import generar_id, fecha_iso
+from nucleo.utilidades import generar_id, fecha_actual
 
 
 USUARIO_AUTORIDAD_DEMO = "autoridad_ec"
@@ -17,7 +17,7 @@ def asegurar_autoridad_demo():
 		"nombre_usuario": USUARIO_AUTORIDAD_DEMO,
 		"clave": CLAVE_AUTORIDAD_DEMO,
 		"es_autoridad": True,
-		"creado_en": fecha_iso(),
+		"creado_en": fecha_actual(),
 	}
 
 	usuarios.append(usuario_demo)

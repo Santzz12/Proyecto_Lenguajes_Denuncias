@@ -9,7 +9,7 @@ from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
 from nucleo.constantes import TIPOS_DENUNCIA
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
-from nucleo.utilidades import limpiar_pantalla, pausa
+from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha
 import nucleo.sesion as sesion
 
 
@@ -65,7 +65,7 @@ def ejecutar():
             print("NUEVA DENUNCIA")
             titulo = input("Titulo: ").strip()
             descripcion = input("Descripcion: ").strip()
-            fecha_evento = input("Fecha del evento (YYYY-MM-DD): ").strip()
+            fecha_evento = input("Fecha del evento (DD-MM-AAAA): ").strip()
             ciudad_provincia = input("Ciudad/Provincia: ").strip()
 
             print("Tipo de denuncia:")
@@ -103,9 +103,10 @@ def ejecutar():
                 print("No hay denuncias registradas.")
             else:
                 for denuncia in denuncias:
+                    fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                     print(
                         f"- {denuncia.get('titulo')} | {denuncia.get('tipo')} | "
-                        f"Estado: {denuncia.get('estado')} | Creada: {denuncia.get('creada_en')}"
+                        f"Estado: {denuncia.get('estado')} | Creada: {fecha_creada}"
                     )
             pausa()
         elif opcion == "3":
@@ -130,9 +131,10 @@ def ejecutar():
                 print("No hay denuncias publicas en el periodo seleccionado.")
             else:
                 for denuncia in denuncias:
+                    fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                     print(
                         f"- {denuncia.get('titulo')} | {denuncia.get('ciudad_provincia')} | "
-                        f"Creada: {denuncia.get('creada_en')}"
+                        f"Creada: {fecha_creada}"
                     )
             pausa()
         elif opcion == "5":

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def normalizar_nombre_usuario(nombre_usuario):
 	return (nombre_usuario or "").strip().lower()
 
@@ -40,16 +42,28 @@ def validar_texto_obligatorio(valor, nombre_campo):
 
 
 def validar_fecha_evento(fecha_evento):
-	from datetime import date
-
 	texto = (fecha_evento or "").strip()
 	if not texto:
 		return False, "La fecha del evento es obligatoria."
-	try:
-		date.fromisoformat(texto)
-	except ValueError:
-		return False, "La fecha del evento debe tener formato YYYY-MM-DD."
+
+	if not normalizar_fecha_evento(texto):
+		return False, "La fecha del evento debe tener formato DD-MM-AAAA."
+
 	return True, ""
+
+
+def normalizar_fecha_evento(fecha_evento):
+	texto = (fecha_evento or "").strip()
+	if not texto:
+		return None
+
+	for formato in ("%d-%m-%Y", "%Y-%m-%d"):
+		try:
+			return datetime.strptime(texto, formato).strftime("%d-%m-%Y")
+		except ValueError:
+			continue
+
+	return None
 
 
 def validar_tipo_denuncia(tipo, tipos_validos):

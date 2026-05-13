@@ -1,6 +1,6 @@
 from nucleo.constantes import RUTA_USUARIOS
 from nucleo.persistencia import leer_lista_json, guardar_lista_json
-from nucleo.utilidades import generar_id, fecha_iso
+from nucleo.utilidades import generar_id, fecha_actual
 from nucleo.validaciones import validar_nombre_usuario, validar_clave, usuario_existe
 
 
@@ -25,7 +25,7 @@ def registrar_usuario(nombre_usuario, clave):
 		"nombre_usuario": nombre_usuario,
 		"clave": clave,
 		"es_autoridad": False,
-		"creado_en": fecha_iso(),
+		"creado_en": fecha_actual(),
 	}
 
 	usuarios.append(nuevo_usuario)
