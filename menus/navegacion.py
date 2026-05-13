@@ -178,7 +178,10 @@ def ejecutar():
                 marcar_mensajes_leidos(denuncia.get("id"), sesion.usuario_actual.get("id"))
 
                 limpiar_pantalla()
+                fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
+                fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                 print(f"CONVERSACION: {denuncia.get('titulo')}")
+                print(f"Evento: {fecha_evento} | Creada: {fecha_creada}")
                 if not mensajes:
                     print("No hay mensajes aun.")
                 else:
@@ -295,7 +298,10 @@ def ejecutar():
             marcar_mensajes_leidos(denuncia.get("id"), sesion.usuario_actual.get("id"))
 
             limpiar_pantalla()
+            fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
+            fecha_creada = formatear_fecha(denuncia.get("creada_en"))
             print(f"CONVERSACION: {denuncia.get('titulo')}")
+            print(f"Evento: {fecha_evento} | Creada: {fecha_creada}")
             if not mensajes:
                 print("No hay mensajes aun.")
             else:
