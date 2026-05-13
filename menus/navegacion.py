@@ -101,9 +101,11 @@ def ejecutar():
 
                 for indice, denuncia in enumerate(denuncias, start=1):
                     fecha_creada = formatear_fecha(denuncia.get("creada_en"))
+                    fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
                     print(
                         f"{indice}. {denuncia.get('titulo')} | {denuncia.get('tipo')} | "
-                        f"Estado: {denuncia.get('estado')} | Creada: {fecha_creada}"
+                        f"Evento: {fecha_evento} | Creada: {fecha_creada} | "
+                        f"Estado: {denuncia.get('estado')}"
                     )
 
                 seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
@@ -122,7 +124,8 @@ def ejecutar():
                 print(f"Titulo: {denuncia.get('titulo')}")
                 print(f"Usuario: {denuncia.get('nombre_usuario')}")
                 print(f"Ciudad/Provincia: {denuncia.get('ciudad_provincia')}")
-                print(f"Fecha del evento: {denuncia.get('fecha_evento')}")
+                print(f"Fecha del evento: {formatear_fecha(denuncia.get('fecha_evento'))}")
+                print(f"Fecha de creacion: {formatear_fecha(denuncia.get('creada_en'))}")
                 print(f"Descripcion: {denuncia.get('descripcion')}")
                 print(f"Estado actual: {denuncia.get('estado')}")
 
@@ -256,10 +259,12 @@ def ejecutar():
                 print("No hay denuncias registradas.")
             else:
                 for denuncia in denuncias:
+                    fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
                     fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                     print(
                         f"- {denuncia.get('titulo')} | {denuncia.get('tipo')} | "
-                        f"Estado: {denuncia.get('estado')} | Creada: {fecha_creada}"
+                        f"Evento: {fecha_evento} | Creada: {fecha_creada} | "
+                        f"Estado: {denuncia.get('estado')}"
                     )
             pausa()
         elif opcion == "3":
@@ -337,9 +342,10 @@ def ejecutar():
             else:
                 for denuncia in denuncias:
                     fecha_creada = formatear_fecha(denuncia.get("creada_en"))
+                    fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
                     print(
                         f"- {denuncia.get('titulo')} | {denuncia.get('ciudad_provincia')} | "
-                        f"Creada: {fecha_creada}"
+                        f"Evento: {fecha_evento} | Creada: {fecha_creada}"
                     )
             pausa()
         elif opcion == "5":
