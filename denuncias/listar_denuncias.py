@@ -1,0 +1,11 @@
+from nucleo.constantes import RUTA_DENUNCIAS
+from nucleo.persistencia import leer_lista_json
+
+
+def listar_denuncias_por_usuario(usuario_id):
+	denuncias = leer_lista_json(RUTA_DENUNCIAS)
+	return [d for d in denuncias if d.get("usuario_id") == usuario_id]
+
+
+def listar_todas_las_denuncias():
+	return leer_lista_json(RUTA_DENUNCIAS)

@@ -30,3 +30,29 @@ def usuario_existe(usuarios, nombre_usuario):
 		(u.get("nombre_usuario") or "").lower() == nombre_normalizado
 		for u in usuarios
 	)
+
+
+def validar_texto_obligatorio(valor, nombre_campo):
+	texto = (valor or "").strip()
+	if not texto:
+		return False, f"El campo {nombre_campo} es obligatorio."
+	return True, ""
+
+
+def validar_fecha_evento(fecha_evento):
+	from datetime import date
+
+	texto = (fecha_evento or "").strip()
+	if not texto:
+		return False, "La fecha del evento es obligatoria."
+	try:
+		date.fromisoformat(texto)
+	except ValueError:
+		return False, "La fecha del evento debe tener formato YYYY-MM-DD."
+	return True, ""
+
+
+def validar_tipo_denuncia(tipo, tipos_validos):
+	if tipo not in tipos_validos:
+		return False, "El tipo de denuncia no es valido."
+	return True, ""
