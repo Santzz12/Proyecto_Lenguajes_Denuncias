@@ -95,7 +95,14 @@ def ejecutar():
 
                 denuncias = filtrar_por_tipo_estado(denuncias, tipo_filtro, estado_filtro)
                 if not denuncias:
-                    print("No hay denuncias registradas.")
+                    if tipo_filtro and estado_filtro:
+                        print("No hay denuncias con el tipo y estado seleccionados.")
+                    elif tipo_filtro:
+                        print("No hay denuncias del tipo seleccionado.")
+                    elif estado_filtro:
+                        print("No hay denuncias con el estado seleccionado.")
+                    else:
+                        print("No hay denuncias registradas.")
                     pausa()
                     continue
 
