@@ -1,8 +1,9 @@
-from nucleo.utilidades import imprimir_titulo
+from nucleo.utilidades import imprimir_titulo, imprimir_salto
 
 
 def menu_usuario(no_leidos=0):
     imprimir_titulo("PANEL CIUDADANO")
+    imprimir_salto()
     print("1. Nueva denuncia")
     print("2. Mis denuncias")
     if no_leidos:
@@ -11,4 +12,5 @@ def menu_usuario(no_leidos=0):
         print("3. Buzon personal")
     print("4. Denuncias publicas")
     print("5. Cerrar sesion")
+    imprimir_salto()
     return input("Seleccione: ").strip()

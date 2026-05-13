@@ -20,7 +20,7 @@ from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
 from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA, PROVINCIAS
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
-from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha
+from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha, imprimir_salto
 import nucleo.sesion as sesion
 
 
@@ -35,6 +35,7 @@ def ejecutar():
             if opcion == "1":
                 limpiar_pantalla()
                 print("INICIO DE SESION")
+                imprimir_salto()
                 nombre_usuario = input("Nombre de usuario: ").strip()
                 clave = getpass("Clave: ")
                 ok, usuario, mensaje = iniciar_sesion_usuario(nombre_usuario, clave)
@@ -46,6 +47,7 @@ def ejecutar():
             elif opcion == "2":
                 limpiar_pantalla()
                 print("REGISTRO DE USUARIO")
+                imprimir_salto()
                 nombre_usuario = input("Nombre de usuario: ").strip()
                 clave = getpass("Clave (minimo 6 caracteres): ")
                 ok, usuario, mensaje = registrar_usuario(nombre_usuario, clave)
@@ -69,9 +71,10 @@ def ejecutar():
             elif opcion == "1":
                 limpiar_pantalla()
                 print("DENUNCIAS REGISTRADAS")
+                imprimir_salto()
 
                 denuncias = listar_todas_las_denuncias()
-                print("\nFiltro por tipo:")
+                print("Filtro por tipo:")
                 print("0. Todos")
                 for indice_tipo, tipo_opcion in enumerate(TIPOS_DENUNCIA, start=1):
                     print(f"{indice_tipo}. {tipo_opcion}")
@@ -91,7 +94,8 @@ def ejecutar():
                     pausa()
                     continue
 
-                print("\nFiltro por estado:")
+                imprimir_salto()
+                print("Filtro por estado:")
                 print("0. Todos")
                 for indice_estado, estado_opcion in enumerate(ESTADOS_DENUNCIA, start=1):
                     print(f"{indice_estado}. {estado_opcion}")
@@ -111,6 +115,7 @@ def ejecutar():
                     pausa()
                     continue
 
+                imprimir_salto()
                 for indice, denuncia in enumerate(denuncias, start=1):
                     fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                     fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
@@ -133,6 +138,7 @@ def ejecutar():
                 denuncia = denuncias[indice]
                 limpiar_pantalla()
                 print("DETALLE DE DENUNCIA")
+                imprimir_salto()
                 print(f"Titulo: {denuncia.get('titulo')}")
                 print(f"Usuario: {denuncia.get('nombre_usuario')}")
                 print(f"Ciudad/Provincia: {denuncia.get('ciudad_provincia')}")
@@ -141,7 +147,8 @@ def ejecutar():
                 print(f"Descripcion: {denuncia.get('descripcion')}")
                 print(f"Estado actual: {denuncia.get('estado')}")
 
-                print("\nEstados disponibles:")
+                imprimir_salto()
+                print("Estados disponibles:")
                 for indice_estado, estado in enumerate(ESTADOS_DENUNCIA, start=1):
                     print(f"{indice_estado}. {estado}")
 
@@ -162,6 +169,7 @@ def ejecutar():
             elif opcion == "2":
                 limpiar_pantalla()
                 print("BUZON DE MENSAJES")
+                imprimir_salto()
 
                 denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
                 if not denuncias_buzon:
@@ -194,6 +202,7 @@ def ejecutar():
                 fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                 print(f"CONVERSACION: {denuncia.get('titulo')}")
                 print(f"Evento: {fecha_evento} | Creada: {fecha_creada}")
+                imprimir_salto()
                 if not mensajes:
                     print("No hay mensajes aun.")
                 else:
@@ -224,6 +233,7 @@ def ejecutar():
         if opcion == "1":
             limpiar_pantalla()
             print("NUEVA DENUNCIA")
+            imprimir_salto()
             titulo = input("Titulo: ").strip()
             descripcion = input("Descripcion: ").strip()
             fecha_evento = input("Fecha del evento (DD-MM-AAAA): ").strip()
@@ -269,6 +279,7 @@ def ejecutar():
         elif opcion == "2":
             limpiar_pantalla()
             print("MIS DENUNCIAS")
+            imprimir_salto()
             denuncias = listar_denuncias_por_usuario(sesion.usuario_actual.get("id"))
             if not denuncias:
                 print("No hay denuncias registradas.")
@@ -285,6 +296,7 @@ def ejecutar():
         elif opcion == "3":
             limpiar_pantalla()
             print("BUZON PERSONAL")
+            imprimir_salto()
 
             denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
             if not denuncias_buzon:
@@ -314,6 +326,7 @@ def ejecutar():
             fecha_creada = formatear_fecha(denuncia.get("creada_en"))
             print(f"CONVERSACION: {denuncia.get('titulo')}")
             print(f"Evento: {fecha_evento} | Creada: {fecha_creada}")
+            imprimir_salto()
             if not mensajes:
                 print("No hay mensajes aun.")
             else:
@@ -343,6 +356,7 @@ def ejecutar():
         elif opcion == "4":
             limpiar_pantalla()
             print("DENUNCIAS PUBLICAS")
+            imprimir_salto()
             print("1. Ultimo dia")
             print("2. Ultima semana")
             print("3. Todo")
@@ -358,6 +372,7 @@ def ejecutar():
             if not denuncias:
                 print("No hay denuncias publicas en el periodo seleccionado.")
             else:
+                imprimir_salto()
                 for denuncia in denuncias:
                     fecha_creada = formatear_fecha(denuncia.get("creada_en"))
                     fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
