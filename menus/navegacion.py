@@ -82,6 +82,15 @@ def ejecutar():
                     if 0 <= indice_tipo < len(TIPOS_DENUNCIA):
                         tipo_filtro = TIPOS_DENUNCIA[indice_tipo]
 
+                denuncias = filtrar_por_tipo_estado(denuncias, tipo_filtro, None)
+                if not denuncias:
+                    if tipo_filtro:
+                        print("No hay denuncias del tipo seleccionado.")
+                    else:
+                        print("No hay denuncias registradas.")
+                    pausa()
+                    continue
+
                 print("\nFiltro por estado:")
                 print("0. Todos")
                 for indice_estado, estado_opcion in enumerate(ESTADOS_DENUNCIA, start=1):
@@ -93,13 +102,9 @@ def ejecutar():
                     if 0 <= indice_estado < len(ESTADOS_DENUNCIA):
                         estado_filtro = ESTADOS_DENUNCIA[indice_estado]
 
-                denuncias = filtrar_por_tipo_estado(denuncias, tipo_filtro, estado_filtro)
+                denuncias = filtrar_por_tipo_estado(denuncias, None, estado_filtro)
                 if not denuncias:
-                    if tipo_filtro and estado_filtro:
-                        print("No hay denuncias con el tipo y estado seleccionados.")
-                    elif tipo_filtro:
-                        print("No hay denuncias del tipo seleccionado.")
-                    elif estado_filtro:
+                    if estado_filtro:
                         print("No hay denuncias con el estado seleccionado.")
                     else:
                         print("No hay denuncias registradas.")
