@@ -4,6 +4,9 @@ from autenticacion.registro import registrar_usuario
 from denuncias.crear_denuncia import crear_denuncia
 from denuncias.denuncias_publicas import obtener_denuncias_publicas
 from denuncias.listar_denuncias import listar_denuncias_por_usuario
+from mensajes.buzon import obtener_denuncias_buzon, obtener_autoridad_destinatario
+from mensajes.enviar_mensaje import enviar_mensaje
+from mensajes.listar_mensajes import listar_mensajes_por_denuncia, marcar_mensajes_leidos
 from menus.menu_autoridad import menu_autoridad
 from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
@@ -54,6 +57,58 @@ def ejecutar():
             opcion = menu_autoridad()
             if opcion == "3":
                 cerrar_sesion()
+            elif opcion == "2":
+                limpiar_pantalla()
+                print("BUZON DE MENSAJES")
+
+                denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
+                if not denuncias_buzon:
+                    print("No hay denuncias registradas.")
+                    pausa()
+                    continue
+
+                for indice, denuncia in enumerate(denuncias_buzon, start=1):
+                    print(
+                        f"{indice}. {denuncia.get('titulo')} | "
+                        f"Usuario: {denuncia.get('nombre_usuario')}"
+                    )
+
+                seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
+                if not seleccion.isdigit() or int(seleccion) == 0:
+                    continue
+
+                indice = int(seleccion) - 1
+                if indice < 0 or indice >= len(denuncias_buzon):
+                    print("Opcion invalida.")
+                    pausa()
+                    continue
+
+                denuncia = denuncias_buzon[indice]
+                mensajes = listar_mensajes_por_denuncia(denuncia.get("id"))
+                marcar_mensajes_leidos(denuncia.get("id"), sesion.usuario_actual.get("id"))
+
+                limpiar_pantalla()
+                print(f"CONVERSACION: {denuncia.get('titulo')}")
+                if not mensajes:
+                    print("No hay mensajes aun.")
+                else:
+                    for mensaje in mensajes:
+                        fecha = formatear_fecha(mensaje.get("creado_en"))
+                        remitente = mensaje.get("remitente_nombre")
+                        contenido = mensaje.get("contenido")
+                        print(f"[{fecha}] {remitente}: {contenido}")
+
+                contenido = input("Escriba un mensaje (Enter para volver): ").strip()
+                if contenido:
+                    ok, _, mensaje = enviar_mensaje(
+                        denuncia.get("id"),
+                        sesion.usuario_actual.get("id"),
+                        sesion.usuario_actual.get("nombre_usuario"),
+                        denuncia.get("usuario_id"),
+                        contenido,
+                    )
+                    print(mensaje)
+                    pausa()
             else:
                 print("Funcionalidad en construccion.")
                 pausa()
@@ -110,8 +165,60 @@ def ejecutar():
                     )
             pausa()
         elif opcion == "3":
-            print("Funcionalidad en construccion.")
-            pausa()
+            limpiar_pantalla()
+            print("BUZON PERSONAL")
+
+            denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
+            if not denuncias_buzon:
+                print("No hay denuncias disponibles para el buzon.")
+                pausa()
+                continue
+
+            for indice, denuncia in enumerate(denuncias_buzon, start=1):
+                print(f"{indice}. {denuncia.get('titulo')} | {denuncia.get('estado')}")
+
+            seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
+            if not seleccion.isdigit() or int(seleccion) == 0:
+                continue
+
+            indice = int(seleccion) - 1
+            if indice < 0 or indice >= len(denuncias_buzon):
+                print("Opcion invalida.")
+                pausa()
+                continue
+
+            denuncia = denuncias_buzon[indice]
+            mensajes = listar_mensajes_por_denuncia(denuncia.get("id"))
+            marcar_mensajes_leidos(denuncia.get("id"), sesion.usuario_actual.get("id"))
+
+            limpiar_pantalla()
+            print(f"CONVERSACION: {denuncia.get('titulo')}")
+            if not mensajes:
+                print("No hay mensajes aun.")
+            else:
+                for mensaje in mensajes:
+                    fecha = formatear_fecha(mensaje.get("creado_en"))
+                    remitente = mensaje.get("remitente_nombre")
+                    contenido = mensaje.get("contenido")
+                    print(f"[{fecha}] {remitente}: {contenido}")
+
+            destinatario = obtener_autoridad_destinatario()
+            if not destinatario:
+                print("No hay autoridad disponible para este buzon.")
+                pausa()
+                continue
+
+            contenido = input("Escriba un mensaje (Enter para volver): ").strip()
+            if contenido:
+                ok, _, mensaje = enviar_mensaje(
+                    denuncia.get("id"),
+                    sesion.usuario_actual.get("id"),
+                    sesion.usuario_actual.get("nombre_usuario"),
+                    destinatario.get("id"),
+                    contenido,
+                )
+                print(mensaje)
+                pausa()
         elif opcion == "4":
             limpiar_pantalla()
             print("DENUNCIAS PUBLICAS")
