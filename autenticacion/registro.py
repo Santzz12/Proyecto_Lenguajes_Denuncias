@@ -1,22 +1,23 @@
 from nucleo.constantes import RUTA_USUARIOS
 from nucleo.persistencia import leer_lista_json, guardar_lista_json
 from nucleo.utilidades import generar_id, fecha_iso
+from nucleo.validaciones import validar_nombre_usuario, validar_clave, usuario_existe
 
 
 def registrar_usuario(nombre_usuario, clave):
 	nombre_usuario = (nombre_usuario or "").strip()
 	clave = clave or ""
 
-	if len(nombre_usuario) < 3:
-		return False, None, "El nombre de usuario debe tener minimo 3 caracteres."
+	ok, mensaje = validar_nombre_usuario(nombre_usuario)
+	if not ok:
+		return False, None, mensaje
 
-	if len(clave) < 6:
-		return False, None, "La clave debe tener minimo 6 caracteres."
+	ok, mensaje = validar_clave(clave)
+	if not ok:
+		return False, None, mensaje
 
 	usuarios = leer_lista_json(RUTA_USUARIOS)
-	nombre_normalizado = nombre_usuario.lower()
-
-	if any((u.get("nombre_usuario") or "").lower() == nombre_normalizado for u in usuarios):
+	if usuario_existe(usuarios, nombre_usuario):
 		return False, None, "El nombre de usuario ya existe."
 
 	nuevo_usuario = {
