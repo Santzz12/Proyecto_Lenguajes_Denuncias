@@ -91,6 +91,7 @@ def ejecutar():
                         print("No hay denuncias del tipo seleccionado.")
                     else:
                         print("No hay denuncias registradas.")
+                    imprimir_salto()
                     pausa()
                     continue
 
@@ -112,6 +113,7 @@ def ejecutar():
                         print("No hay denuncias con el estado seleccionado.")
                     else:
                         print("No hay denuncias registradas.")
+                    imprimir_salto()
                     pausa()
                     continue
 
@@ -174,6 +176,7 @@ def ejecutar():
                 denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
                 if not denuncias_buzon:
                     print("No hay denuncias registradas.")
+                    imprimir_salto()
                     pausa()
                     continue
 
@@ -205,6 +208,7 @@ def ejecutar():
                 imprimir_salto()
                 if not mensajes:
                     print("No hay mensajes aun.")
+                    imprimir_salto()
                 else:
                     for mensaje in mensajes:
                         fecha = formatear_fecha(mensaje.get("creado_en"))
@@ -255,6 +259,7 @@ def ejecutar():
             ciudades = CIUDADES_POR_PROVINCIA.get(provincia, [])
             if not ciudades:
                 print("No hay ciudades registradas para esta provincia.")
+                imprimir_salto()
                 pausa()
                 continue
 
@@ -311,6 +316,7 @@ def ejecutar():
             denuncias = listar_denuncias_por_usuario(sesion.usuario_actual.get("id"))
             if not denuncias:
                 print("No hay denuncias registradas.")
+                imprimir_salto()
             else:
                 for denuncia in denuncias:
                     fecha_evento = formatear_fecha(denuncia.get("fecha_evento"))
@@ -329,6 +335,7 @@ def ejecutar():
             denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
             if not denuncias_buzon:
                 print("No hay denuncias disponibles para el buzon.")
+                imprimir_salto()
                 pausa()
                 continue
 
@@ -357,6 +364,7 @@ def ejecutar():
             imprimir_salto()
             if not mensajes:
                 print("No hay mensajes aun.")
+                imprimir_salto()
             else:
                 for mensaje in mensajes:
                     fecha = formatear_fecha(mensaje.get("creado_en"))
@@ -367,6 +375,7 @@ def ejecutar():
             destinatario = obtener_autoridad_destinatario()
             if not destinatario:
                 print("No hay autoridad disponible para este buzon.")
+                imprimir_salto()
                 pausa()
                 continue
 
@@ -399,6 +408,7 @@ def ejecutar():
             denuncias = obtener_denuncias_publicas(periodo)
             if not denuncias:
                 print("No hay denuncias publicas en el periodo seleccionado.")
+                imprimir_salto()
             else:
                 imprimir_salto()
                 for denuncia in denuncias:
