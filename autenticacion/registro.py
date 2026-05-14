@@ -4,21 +4,31 @@ from nucleo.utilidades import generar_id, fecha_actual
 from nucleo.validaciones import validar_nombre_usuario, validar_clave, usuario_existe
 
 
+def validar_nombre_usuario_disponible(nombre_usuario):
+	nombre_usuario = (nombre_usuario or "").strip()
+
+	ok, mensaje = validar_nombre_usuario(nombre_usuario)
+	if not ok:
+		return False, None, mensaje
+
+	usuarios = leer_lista_json(RUTA_USUARIOS)
+	if usuario_existe(usuarios, nombre_usuario):
+		return False, None, "\nEl nombre de usuario ya existe."
+
+	return True, usuarios, ""
+
+
 def registrar_usuario(nombre_usuario, clave):
 	nombre_usuario = (nombre_usuario or "").strip()
 	clave = clave or ""
 
-	ok, mensaje = validar_nombre_usuario(nombre_usuario)
+	ok, usuarios, mensaje = validar_nombre_usuario_disponible(nombre_usuario)
 	if not ok:
 		return False, None, mensaje
 
 	ok, mensaje = validar_clave(clave)
 	if not ok:
 		return False, None, mensaje
-
-	usuarios = leer_lista_json(RUTA_USUARIOS)
-	if usuario_existe(usuarios, nombre_usuario):
-		return False, None, "El nombre de usuario ya existe."
 
 	nuevo_usuario = {
 		"id": generar_id("u"),
@@ -31,4 +41,4 @@ def registrar_usuario(nombre_usuario, clave):
 	usuarios.append(nuevo_usuario)
 	guardar_lista_json(RUTA_USUARIOS, usuarios)
 
-	return True, nuevo_usuario, "Usuario registrado correctamente."
+	return True, nuevo_usuario, "\nUsuario registrado correctamente."
