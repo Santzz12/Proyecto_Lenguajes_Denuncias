@@ -2,7 +2,7 @@ from getpass import getpass
 
 from autenticacion.autorizacion import asegurar_autoridad_demo
 from autenticacion.inicio_sesion import iniciar_sesion_usuario
-from autenticacion.registro import registrar_usuario
+from autenticacion.registro import registrar_usuario, validar_nombre_usuario_disponible
 from denuncias.actualizar_estado import actualizar_estado_denuncia
 from denuncias.crear_denuncia import crear_denuncia
 from denuncias.denuncias_publicas import obtener_denuncias_publicas
@@ -21,6 +21,7 @@ from menus.menu_usuario import menu_usuario
 from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA, PROVINCIAS, CIUDADES_POR_PROVINCIA
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
 from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha, imprimir_salto
+from nucleo.validaciones import validar_clave
 import nucleo.sesion as sesion
 
 
@@ -49,7 +50,36 @@ def ejecutar():
                 print("REGISTRO DE USUARIO")
                 imprimir_salto()
                 nombre_usuario = input("Nombre de usuario: ").strip()
-                clave = getpass("Clave (minimo 6 caracteres): ")
+
+                ok, _, mensaje = validar_nombre_usuario_disponible(nombre_usuario)
+                if not ok:
+                    print(mensaje)
+                    pausa()
+                    continue
+
+                while True:
+                    print("\nLa clave debe tener al menos 6 caracteres.")
+                    clave = getpass("Clave: ")
+                    confirmacion_clave = getpass("Confirmar clave: ")
+                    if clave != confirmacion_clave:
+                        print("\nLas claves no coinciden. Intente nuevamente.")
+                        imprimir_salto()
+                        continue
+
+                    ok, mensaje = validar_clave(clave)
+                    if not ok:
+                        print(mensaje)
+                        imprimir_salto()
+                        continue
+
+                    break
+
+                confirmar = input("\nConfirmar registro (s/n): ").strip().lower()
+                if confirmar != "s":
+                    print("\nRegistro cancelado.")
+                    pausa()
+                    continue
+
                 ok, usuario, mensaje = registrar_usuario(nombre_usuario, clave)
                 if ok:
                     iniciar_sesion(usuario)
@@ -59,7 +89,7 @@ def ejecutar():
             elif opcion == "3":
                 break
             else:
-                print("Opcion invalida.")
+                print("\nOpcion invalida.")
                 pausa()
             continue
 
@@ -88,9 +118,9 @@ def ejecutar():
                 denuncias = filtrar_por_tipo_estado(denuncias, tipo_filtro, None)
                 if not denuncias:
                     if tipo_filtro:
-                        print("No hay denuncias del tipo seleccionado.")
+                        print("\nNo hay denuncias del tipo seleccionado.")
                     else:
-                        print("No hay denuncias registradas.")
+                        print("\nNo hay denuncias registradas.")
                     imprimir_salto()
                     pausa()
                     continue
@@ -110,9 +140,9 @@ def ejecutar():
                 denuncias = filtrar_por_tipo_estado(denuncias, None, estado_filtro)
                 if not denuncias:
                     if estado_filtro:
-                        print("No hay denuncias con el estado seleccionado.")
+                        print("\nNo hay denuncias con el estado seleccionado.")
                     else:
-                        print("No hay denuncias registradas.")
+                        print("\nNo hay denuncias registradas.")
                     imprimir_salto()
                     pausa()
                     continue
@@ -133,7 +163,7 @@ def ejecutar():
 
                 indice = int(seleccion) - 1
                 if indice < 0 or indice >= len(denuncias):
-                    print("Opcion invalida.")
+                    print("\nOpcion invalida.")
                     pausa()
                     continue
 
@@ -175,7 +205,7 @@ def ejecutar():
 
                 denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
                 if not denuncias_buzon:
-                    print("No hay denuncias registradas.")
+                    print("\nNo hay denuncias registradas.")
                     imprimir_salto()
                     pausa()
                     continue
@@ -192,7 +222,7 @@ def ejecutar():
 
                 indice = int(seleccion) - 1
                 if indice < 0 or indice >= len(denuncias_buzon):
-                    print("Opcion invalida.")
+                    print("\nOpcion invalida.")
                     pausa()
                     continue
 
@@ -207,7 +237,7 @@ def ejecutar():
                 print(f"Evento: {fecha_evento} | Creada: {fecha_creada}")
                 imprimir_salto()
                 if not mensajes:
-                    print("No hay mensajes aun.")
+                    print("\nNo hay mensajes aun.")
                     imprimir_salto()
                 else:
                     for mensaje in mensajes:
@@ -242,31 +272,38 @@ def ejecutar():
             descripcion = input("Descripcion: ").strip()
             fecha_evento = input("Fecha del evento (DD-MM-AAAA): ").strip()
             print("Provincia:")
-            for indice, provincia in enumerate(PROVINCIAS, start=1):
-                print(f"{indice}. {provincia}")
+            provincias_ordenadas = sorted(PROVINCIAS)
+            bloque_provincias = "\n".join(
+                f"{indice}. {provincia}"
+                for indice, provincia in enumerate(provincias_ordenadas, start=1)
+            )
+            print(f"""{bloque_provincias}""")
             opcion_provincia = input("Seleccione una provincia: ").strip()
             provincia = None
             if opcion_provincia.isdigit():
                 indice = int(opcion_provincia)
-                if 1 <= indice <= len(PROVINCIAS):
-                    provincia = PROVINCIAS[indice - 1]
+                if 1 <= indice <= len(provincias_ordenadas):
+                    provincia = provincias_ordenadas[indice - 1]
 
             if not provincia:
-                print("Opcion de provincia invalida.")
+                print("\nOpcion de provincia invalida.")
                 pausa()
                 continue
 
-            ciudades = CIUDADES_POR_PROVINCIA.get(provincia, [])
+            ciudades = sorted(CIUDADES_POR_PROVINCIA.get(provincia, []))
             if not ciudades:
-                print("No hay ciudades registradas para esta provincia.")
+                print("\nNo hay ciudades registradas para esta provincia.")
                 imprimir_salto()
                 pausa()
                 continue
 
             imprimir_salto()
             print(f"Ciudades de {provincia}:")
-            for indice, ciudad in enumerate(ciudades, start=1):
-                print(f"{indice}. {ciudad}")
+            bloque_ciudades = "\n".join(
+                f"{indice}. {ciudad}"
+                for indice, ciudad in enumerate(ciudades, start=1)
+            )
+            print(f"""{bloque_ciudades}""")
 
             opcion_ciudad = input("Seleccione una ciudad: ").strip()
             ciudad = None
@@ -276,7 +313,7 @@ def ejecutar():
                     ciudad = ciudades[indice - 1]
 
             if not ciudad:
-                print("Opcion de ciudad invalida.")
+                print("\nOpcion de ciudad invalida.")
                 pausa()
                 continue
 
@@ -308,6 +345,7 @@ def ejecutar():
 
             ok, _, mensaje = crear_denuncia(datos)
             print(mensaje)
+            imprimir_salto()
             pausa()
         elif opcion == "2":
             limpiar_pantalla()
@@ -315,7 +353,7 @@ def ejecutar():
             imprimir_salto()
             denuncias = listar_denuncias_por_usuario(sesion.usuario_actual.get("id"))
             if not denuncias:
-                print("No hay denuncias registradas.")
+                print("\nNo hay denuncias registradas.")
                 imprimir_salto()
             else:
                 for denuncia in denuncias:
@@ -334,7 +372,7 @@ def ejecutar():
 
             denuncias_buzon = obtener_denuncias_buzon(sesion.usuario_actual)
             if not denuncias_buzon:
-                print("No hay denuncias disponibles para el buzon.")
+                print("\nNo hay denuncias disponibles para el buzon.")
                 imprimir_salto()
                 pausa()
                 continue
@@ -363,7 +401,7 @@ def ejecutar():
             print(f"Evento: {fecha_evento} | Creada: {fecha_creada}")
             imprimir_salto()
             if not mensajes:
-                print("No hay mensajes aun.")
+                print("\nNo hay mensajes aun.")
                 imprimir_salto()
             else:
                 for mensaje in mensajes:
@@ -374,7 +412,7 @@ def ejecutar():
 
             destinatario = obtener_autoridad_destinatario()
             if not destinatario:
-                print("No hay autoridad disponible para este buzon.")
+                print("\nNo hay autoridad disponible para este buzon.")
                 imprimir_salto()
                 pausa()
                 continue
@@ -407,7 +445,7 @@ def ejecutar():
 
             denuncias = obtener_denuncias_publicas(periodo)
             if not denuncias:
-                print("No hay denuncias publicas en el periodo seleccionado.")
+                print("\nNo hay denuncias publicas en el periodo seleccionado.")
                 imprimir_salto()
             else:
                 imprimir_salto()
