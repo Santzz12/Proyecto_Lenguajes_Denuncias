@@ -1,1 +1,32 @@
-[]
+[
+    {
+        "id": "m_c8dfc13a-cef2-4f8f-abe5-bb7693734b3f",
+        "denuncia_id": "d_3f409be6-2caa-431b-8670-f883cbd133c6",
+        "remitente_id": "u_a7b975d5-e595-44da-98e4-d207f618deaa",
+        "remitente_nombre": "autoridad_ec",
+        "destinatario_id": "u_48c85e02-0f16-46bd-bd37-fe9ff173e96d",
+        "contenido": "Buenas, su denuncia ha sido recibida y está en proceso. Por favor proporcionenos más información al respecto.",
+        "leido": true,
+        "creado_en": "13-05-2026"
+    },
+    {
+        "id": "m_6dfbc76a-7d95-4cc2-8dc1-79403e8d7b7b",
+        "denuncia_id": "d_3f409be6-2caa-431b-8670-f883cbd133c6",
+        "remitente_id": "u_48c85e02-0f16-46bd-bd37-fe9ff173e96d",
+        "remitente_nombre": "anonimo5",
+        "destinatario_id": "u_a7b975d5-e595-44da-98e4-d207f618deaa",
+        "contenido": "Buenas tardes, el sujeto se llama NOMBRE APELLIDO y tiene numero de cédula 0987654321, vive en AV. SIEMPRE VIVA. VILLA. 10",
+        "leido": false,
+        "creado_en": "13-05-2026"
+    },
+    {
+        "id": "m_38219e12-aed7-4d82-b36f-a1bf09772b68",
+        "denuncia_id": "d_eba5dccf-0e57-4dc3-a8e7-04899789f7b3",
+        "remitente_id": "u_a7b975d5-e595-44da-98e4-d207f618deaa",
+        "remitente_nombre": "autoridad_ec",
+        "destinatario_id": "u_48c85e02-0f16-46bd-bd37-fe9ff173e96d",
+        "contenido": "Buenas noches ciudadano, su denuncia esta siendo procesada. Por favor comparanos los numeros de placas de los autos e imagenes, por nuestra parte verificaremos los registros de la camara de video-vigilancia del sector. Muchas gracoias.",
+        "leido": false,
+        "creado_en": "13-05-2026"
+    }
+]

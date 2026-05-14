@@ -1,8 +1,13 @@
 # Arquitectura del sistema (CLI funcional)
 
-## Alcance de este documento
+## Alcance
 
-Este archivo describe la arquitectura tecnica y las decisiones de diseno. El manual de usuario es un documento separado con pasos y capturas.
+Este documento describe la arquitectura tecnica, la organizacion del codigo y el modelo de datos. El manual de usuario contiene los pasos de uso y las capturas.
+
+## Requisitos tecnicos
+
+- Python 3.x
+- Ejecucion en consola (CLI)
 
 ## Principios
 
@@ -14,83 +19,15 @@ Este archivo describe la arquitectura tecnica y las decisiones de diseno. El man
 
 ## Estructura de carpetas
 
-- `principal.py`: punto de entrada.
+- `principal.py`: punto de entrada y arranque del flujo.
 - `nucleo/`: constantes, utilidades, validaciones, persistencia y sesion.
 - `autenticacion/`: registro, inicio de sesion y autorizacion.
-- `denuncias/`: crear, listar, filtrar y denuncias publicas.
+- `denuncias/`: crear, listar, filtrar, denuncias publicas y actualizar estado.
 - `mensajes/`: buzon, envio y listado.
 - `menus/`: navegacion y menus CLI.
 - `datos/`: `usuarios.json`, `denuncias.json`, `mensajes.json`.
 - `pruebas/`: pruebas basicas (funcionales, sin frameworks complejos).
 - `documentacion/`: este archivo y el manual de usuario.
-
-## Modelo de datos (diccionarios)
-
-### Usuario
-
-```
-{
-	"id": "u_...",
-	"nombre_usuario": "alias",
-	"clave": "...",
-	"es_autoridad": false,
-	"creado_en": "DD-MM-AAAA"
-}
-```
-
-### Denuncia
-
-```
-{
-	"id": "d_...",
-	"usuario_id": "u_...",
-	"nombre_usuario": "alias",
-	"titulo": "...",
-	"descripcion": "...",
-	"fecha_evento": "DD-MM-AAAA",
-	"ciudad_provincia": "...",
-	"tipo": "Aseo y Ornato | Transito Vial | Delito",
-	"es_publica": true,
-	"estado": "Recibida | En Proceso | Resuelta | Rechazada",
-	"creada_en": "DD-MM-AAAA"
-}
-```
-
-### Mensaje
-
-```
-{
-	"id": "m_...",
-	"denuncia_id": "d_...",
-	"remitente_id": "u_...",
-	"remitente_nombre": "alias",
-	"destinatario_id": "u_...",
-	"contenido": "...",
-	"creado_en": "DD-MM-AAAA",
-	"leido": false
-}
-```
-
-## Sesion
-
-- `nucleo/sesion.py` define `usuario_actual = None`.
-- La capa de menus consulta y actualiza esta variable global.
-
-## Filtro de denuncias publicas
-
-- El filtro de "ultimo dia / ultima semana" usa `creada_en`.
-- `fecha_evento` es informativa y se muestra en el detalle.
-
-## Persistencia JSON
-
-- `nucleo/persistencia.py` ofrece funciones para leer y guardar JSON.
-- Se trabaja en memoria y se guarda tras acciones clave (registro, denuncia, mensaje).
-
-## Validaciones minimas
-
-- Registro: usuario unico, longitud minima y clave minima.
-- Denuncia: campos obligatorios completos.
-- Mensaje: contenido no vacio.
 
 ## Flujo general
 
@@ -100,14 +37,123 @@ Este archivo describe la arquitectura tecnica y las decisiones de diseno. El man
 4. Accion -> funcion -> persistencia -> retorno
 5. Salida del sistema
 
+## Componentes y responsabilidades
+
+### Nucleo
+
+- `constantes.py`: rutas JSON, tipos de denuncia, estados, provincias y catalogo de ciudades por provincia.
+- `persistencia.py`: lectura/escritura de listas JSON (sin logica de negocio).
+- `utilidades.py`: IDs, fechas, limpieza de pantalla, titulos, parseo de fechas y formateo de listas en columnas.
+- `validaciones.py`: reglas de entrada (usuario, clave, fecha, ciudad/provincia y tipo).
+- `sesion.py`: `usuario_actual` y helpers basicos.
+
+### Autenticacion
+
+- `registro.py`: crea usuarios con validaciones y confirma disponibilidad del nombre.
+- `inicio_sesion.py`: valida credenciales y retorna el usuario.
+- `autorizacion.py`: crea autoridad demo de forma idempotente.
+
+### Denuncias
+
+- `crear_denuncia.py`: valida datos y guarda denuncia.
+- `listar_denuncias.py`: listados por usuario y generales (ordenados por fecha).
+- `denuncias_publicas.py`: filtro por periodo y orden por fecha.
+- `filtros.py`: filtros por periodo, tipo y estado.
+- `actualizar_estado.py`: cambio de estado por autoridad.
+
+### Mensajes
+
+- `enviar_mensaje.py`: crea mensajes y persiste.
+- `listar_mensajes.py`: lista y marca como leidos.
+- `buzon.py`: determina denuncias disponibles y autoridad destino.
+
+### Menus
+
+- `menu_inicio.py`: menu principal.
+- `menu_usuario.py`: menu ciudadano con contador de no leidos.
+- `menu_autoridad.py`: menu autoridad con contador de no leidos.
+- `navegacion.py`: orquesta el flujo, confirma clave en registro y muestra provincias/ciudades en columnas.
+
+## Modelo de datos (diccionarios)
+
+### Usuario
+
+```
+{
+  "id": "u_...",
+  "nombre_usuario": "alias",
+  "clave": "...",
+  "es_autoridad": false,
+  "creado_en": "DD-MM-AAAA"
+}
+```
+
+### Denuncia
+
+```
+{
+  "id": "d_...",
+  "usuario_id": "u_...",
+  "nombre_usuario": "alias",
+  "titulo": "...",
+  "descripcion": "...",
+  "fecha_evento": "DD-MM-AAAA",
+  "ciudad_provincia": "Provincia - Ciudad",
+  "tipo": "Aseo y Ornato | Transito Vial | Delito",
+  "es_publica": true,
+  "estado": "Recibida | En Proceso | Resuelta | Rechazada",
+  "creada_en": "DD-MM-AAAA"
+}
+```
+
+### Mensaje
+
+```
+{
+  "id": "m_...",
+  "denuncia_id": "d_...",
+  "remitente_id": "u_...",
+  "remitente_nombre": "alias",
+  "destinatario_id": "u_...",
+  "contenido": "...",
+  "creado_en": "DD-MM-AAAA",
+  "leido": false
+}
+```
+
+## Reglas de negocio
+
+- `nombre_usuario` es unico (case-insensitive).
+- `clave` minimo 6 caracteres.
+- `fecha_evento` se ingresa como DD-MM-AAAA (se acepta YYYY-MM-DD si se requiere).
+- `creada_en` se genera automaticamente en DD-MM-AAAA.
+- `tipo` y `estado` deben pertenecer a las listas oficiales.
+- `ciudad_provincia` se valida como "Provincia - Ciudad" usando el catalogo de provincias y ciudades.
+- El registro solicita confirmacion de clave antes de crear el usuario.
+- El filtro de denuncias publicas usa `creada_en`.
+
+## Persistencia JSON
+
+- Cada archivo en `datos/` contiene una lista de diccionarios.
+- La lectura tolera archivos inexistentes o invalidos y retorna listas vacias.
+- Se guarda despues de acciones clave (registro, denuncia, mensaje, estado).
+
+## Seguridad (alcance academico)
+
+- La clave se guarda en texto plano (requerimiento academico).
+- La entrada de clave se oculta en consola con `getpass`.
+- No hay cifrado ni control de concurrencia.
+
+## Manejo de errores
+
+- Entradas invalidas retornan mensajes y vuelven al menu.
+- Archivos JSON invalidos se reemplazan por listas vacias al leer.
+
 ## Estado actual (avance)
 
-- Constantes, persistencia, utilidades y sesion implementadas.
-- Menus base listos con opciones en construccion.
-- Autenticacion real implementada (registro e inicio de sesion).
-- Validaciones minimas centralizadas en el nucleo.
-- Autoridad demo se asegura al inicio del sistema.
-- Denuncias: crear, listar propias y consultar publicas.
-- Mensajes: buzon personal y envio basico implementados.
-- Autoridad: listado general y actualizacion de estado.
-- Pulidos: orden por fecha, filtros en autoridad y conteo de no leidos.
+- Autenticacion completa con registro e inicio de sesion.
+- Denuncias completas (crear, listar, publicas, filtros, estado).
+- Mensajes completos (buzon, envio, lectura, no leidos).
+- Autoridad demo idempotente.
+- Pulidos: orden por fecha, filtros de autoridad, seleccion provincia -> ciudad en columnas.
+- Consola: espaciado y saltos de linea para mejor lectura.

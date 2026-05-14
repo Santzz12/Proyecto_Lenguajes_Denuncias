@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "id": "u_a7b975d5-e595-44da-98e4-d207f618deaa",
+        "nombre_usuario": "autoridad_ec",
+        "clave": "Autoridad2026",
+        "es_autoridad": true,
+        "creado_en": "2026-05-12T20:38:55"
+    },
+    {
+        "id": "u_48c85e02-0f16-46bd-bd37-fe9ff173e96d",
+        "nombre_usuario": "anonimo5",
+        "clave": "123456",
+        "es_autoridad": false,
+        "creado_en": "13-05-2026"
+    }
+]

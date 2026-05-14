@@ -1,1 +1,28 @@
-[]
+[
+    {
+        "id": "d_3f409be6-2caa-431b-8670-f883cbd133c6",
+        "usuario_id": "u_48c85e02-0f16-46bd-bd37-fe9ff173e96d",
+        "nombre_usuario": "anonimo5",
+        "titulo": "Robo a mano armada",
+        "descripcion": "Un tipo me atracó con un arma de fuego cuando me bajaba del bus linea n° 13, en la estación ubicada en el guasmo pasando interagua. Me despojo de mis pertenencias entre ellas un celular y mi billetera con todos mis documentos. El tipo vive cerca de ese lugar y siempre anda robando se le conoce como \"Chino\".",
+        "fecha_evento": "29-04-2026",
+        "ciudad_provincia": "Guayas - Guayaquil",
+        "tipo": "Delito",
+        "es_publica": true,
+        "estado": "En Proceso",
+        "creada_en": "13-05-2026"
+    },
+    {
+        "id": "d_eba5dccf-0e57-4dc3-a8e7-04899789f7b3",
+        "usuario_id": "u_48c85e02-0f16-46bd-bd37-fe9ff173e96d",
+        "nombre_usuario": "anonimo5",
+        "titulo": "Carros mal estacionados en lugar publico",
+        "descripcion": "Existen varias ciudadanos que utilzan mal el espacio publico para colocar sus autos con les da la gana. Ocupando media calle y tambien tapando entradas para ocupar la via publica. Estare recabando informacion sobre las placas de los autos junto a imagenes y videos.",
+        "fecha_evento": "03-05-2026",
+        "ciudad_provincia": "Guayas - Guayaquil",
+        "tipo": "Transito Vial",
+        "es_publica": false,
+        "estado": "En Proceso",
+        "creada_en": "13-05-2026"
+    }
+]
