@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from nucleo.constantes import PROVINCIAS
+from nucleo.constantes import PROVINCIAS, CIUDADES_POR_PROVINCIA
 
 def normalizar_nombre_usuario(nombre_usuario):
 	return (nombre_usuario or "").strip().lower()
@@ -79,8 +79,23 @@ def validar_ciudad_provincia(ciudad_provincia):
 	if not texto:
 		return False, "La ciudad/provincia es obligatoria."
 
-	if texto.lower() not in [p.lower() for p in PROVINCIAS]:
-		return False, "La ciudad/provincia no es valida."
+	if " - " not in texto:
+		return False, "Debe seleccionar una provincia y una ciudad."
+
+	provincia, ciudad = [parte.strip() for parte in texto.split(" - ", 1)]
+	provincia_normalizada = next(
+		(p for p in PROVINCIAS if p.lower() == provincia.lower()),
+		None,
+	)
+	if not provincia_normalizada:
+		return False, "La provincia no es valida."
+
+	ciudades = CIUDADES_POR_PROVINCIA.get(provincia_normalizada, [])
+	if not ciudades:
+		return False, "No hay ciudades registradas para la provincia seleccionada."
+
+	if ciudad.lower() not in [c.lower() for c in ciudades]:
+		return False, "La ciudad no es valida para la provincia seleccionada."
 
 	return True, ""
 
@@ -90,8 +105,23 @@ def normalizar_ciudad_provincia(ciudad_provincia):
 	if not texto:
 		return None
 
-	for provincia in PROVINCIAS:
-		if provincia.lower() == texto.lower():
-			return provincia
+	if " - " not in texto:
+		return None
 
-	return None
+	provincia, ciudad = [parte.strip() for parte in texto.split(" - ", 1)]
+	provincia_normalizada = next(
+		(p for p in PROVINCIAS if p.lower() == provincia.lower()),
+		None,
+	)
+	if not provincia_normalizada:
+		return None
+
+	ciudades = CIUDADES_POR_PROVINCIA.get(provincia_normalizada, [])
+	ciudad_normalizada = next(
+		(c for c in ciudades if c.lower() == ciudad.lower()),
+		None,
+	)
+	if not ciudad_normalizada:
+		return None
+
+	return f"{provincia_normalizada} - {ciudad_normalizada}"

@@ -18,7 +18,7 @@ from mensajes.listar_mensajes import (
 from menus.menu_autoridad import menu_autoridad
 from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
-from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA, PROVINCIAS
+from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA, PROVINCIAS, CIUDADES_POR_PROVINCIA
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
 from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha, imprimir_salto
 import nucleo.sesion as sesion
@@ -237,17 +237,45 @@ def ejecutar():
             titulo = input("Titulo: ").strip()
             descripcion = input("Descripcion: ").strip()
             fecha_evento = input("Fecha del evento (DD-MM-AAAA): ").strip()
-            print("Ciudad/Provincia:")
+            print("Provincia:")
             for indice, provincia in enumerate(PROVINCIAS, start=1):
                 print(f"{indice}. {provincia}")
-            opcion_provincia = input("Seleccione (numero) o escriba el nombre: ").strip()
-            ciudad_provincia = None
+            opcion_provincia = input("Seleccione una provincia: ").strip()
+            provincia = None
             if opcion_provincia.isdigit():
                 indice = int(opcion_provincia)
                 if 1 <= indice <= len(PROVINCIAS):
-                    ciudad_provincia = PROVINCIAS[indice - 1]
-            else:
-                ciudad_provincia = opcion_provincia
+                    provincia = PROVINCIAS[indice - 1]
+
+            if not provincia:
+                print("Opcion de provincia invalida.")
+                pausa()
+                continue
+
+            ciudades = CIUDADES_POR_PROVINCIA.get(provincia, [])
+            if not ciudades:
+                print("No hay ciudades registradas para esta provincia.")
+                pausa()
+                continue
+
+            imprimir_salto()
+            print(f"Ciudades de {provincia}:")
+            for indice, ciudad in enumerate(ciudades, start=1):
+                print(f"{indice}. {ciudad}")
+
+            opcion_ciudad = input("Seleccione una ciudad: ").strip()
+            ciudad = None
+            if opcion_ciudad.isdigit():
+                indice = int(opcion_ciudad)
+                if 1 <= indice <= len(ciudades):
+                    ciudad = ciudades[indice - 1]
+
+            if not ciudad:
+                print("Opcion de ciudad invalida.")
+                pausa()
+                continue
+
+            ciudad_provincia = f"{provincia} - {ciudad}"
 
             print("Tipo de denuncia:")
             for indice, tipo in enumerate(TIPOS_DENUNCIA, start=1):
