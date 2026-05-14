@@ -228,7 +228,7 @@ def ejecutar():
                     print(mensaje)
                     pausa()
             else:
-                print("Funcionalidad en construccion.")
+                print("Opcion invalida.")
                 pausa()
             continue
 
