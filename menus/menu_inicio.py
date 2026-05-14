@@ -8,4 +8,4 @@ def menu_inicio():
     print("2. Registrarse")
     print("3. Salir")
     imprimir_salto()
-    return input("Seleccione: ").strip()
+    return input("\nSeleccione: ").strip()

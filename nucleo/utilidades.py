@@ -1,4 +1,5 @@
 import os
+import shutil
 import uuid
 from datetime import datetime
 
@@ -52,7 +53,7 @@ def limpiar_pantalla():
 
 
 def pausa():
-    input("Presione Enter para continuar...")
+    input("\nPresione Enter para continuar...")
 
 
 def imprimir_titulo(texto):
@@ -65,3 +66,30 @@ def imprimir_titulo(texto):
 def imprimir_salto(cantidad=1):
 	for _ in range(cantidad):
 		print()
+
+
+def imprimir_lista_en_columnas(items, columnas=None, separacion=2):
+    if not items:
+        return
+
+    etiquetas = [f"{indice}. {item}" for indice, item in enumerate(items, start=1)]
+    ancho_max = max(len(etiqueta) for etiqueta in etiquetas)
+    ancho_columna = ancho_max + separacion
+
+    if not columnas or columnas < 1:
+        ancho_terminal = shutil.get_terminal_size(fallback=(80, 20)).columns
+        columnas = max(1, ancho_terminal // ancho_columna)
+
+    filas = (len(etiquetas) + columnas - 1) // columnas
+    for fila in range(filas):
+        partes = []
+        for columna in range(columnas):
+            indice = fila + columna * filas
+            if indice >= len(etiquetas):
+                continue
+            etiqueta = etiquetas[indice]
+            if columna < columnas - 1:
+                partes.append(etiqueta.ljust(ancho_columna))
+            else:
+                partes.append(etiqueta)
+        print("".join(partes).rstrip())

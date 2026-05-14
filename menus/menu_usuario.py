@@ -13,4 +13,4 @@ def menu_usuario(no_leidos=0):
     print("4. Denuncias publicas")
     print("5. Cerrar sesion")
     imprimir_salto()
-    return input("Seleccione: ").strip()
+    return input("\nSeleccione: ").strip()

@@ -11,4 +11,4 @@ def menu_autoridad(no_leidos=0):
         print("2. Buzon de mensajes")
     print("3. Cerrar sesion")
     imprimir_salto()
-    return input("Seleccione: ").strip()
+    return input("\nSeleccione: ").strip()

@@ -20,7 +20,13 @@ from menus.menu_inicio import menu_inicio
 from menus.menu_usuario import menu_usuario
 from nucleo.constantes import TIPOS_DENUNCIA, ESTADOS_DENUNCIA, PROVINCIAS, CIUDADES_POR_PROVINCIA
 from nucleo.sesion import iniciar_sesion, cerrar_sesion, esta_autenticado, es_autoridad
-from nucleo.utilidades import limpiar_pantalla, pausa, formatear_fecha, imprimir_salto
+from nucleo.utilidades import (
+    limpiar_pantalla,
+    pausa,
+    formatear_fecha,
+    imprimir_salto,
+    imprimir_lista_en_columnas,
+)
 from nucleo.validaciones import validar_clave
 import nucleo.sesion as sesion
 
@@ -108,7 +114,7 @@ def ejecutar():
                 print("0. Todos")
                 for indice_tipo, tipo_opcion in enumerate(TIPOS_DENUNCIA, start=1):
                     print(f"{indice_tipo}. {tipo_opcion}")
-                opcion_tipo = input("Seleccione: ").strip()
+                opcion_tipo = input("\nSeleccione: ").strip()
                 tipo_filtro = None
                 if opcion_tipo.isdigit() and int(opcion_tipo) > 0:
                     indice_tipo = int(opcion_tipo) - 1
@@ -130,7 +136,7 @@ def ejecutar():
                 print("0. Todos")
                 for indice_estado, estado_opcion in enumerate(ESTADOS_DENUNCIA, start=1):
                     print(f"{indice_estado}. {estado_opcion}")
-                opcion_estado = input("Seleccione: ").strip()
+                opcion_estado = input("\nSeleccione: ").strip()
                 estado_filtro = None
                 if opcion_estado.isdigit() and int(opcion_estado) > 0:
                     indice_estado = int(opcion_estado) - 1
@@ -157,7 +163,7 @@ def ejecutar():
                         f"Estado: {denuncia.get('estado')}"
                     )
 
-                seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
+                seleccion = input("\nSeleccione una denuncia (0 para volver): ").strip()
                 if not seleccion.isdigit() or int(seleccion) == 0:
                     continue
 
@@ -216,7 +222,7 @@ def ejecutar():
                         f"Usuario: {denuncia.get('nombre_usuario')}"
                     )
 
-                seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
+                seleccion = input("\nSeleccione una denuncia (0 para volver): ").strip()
                 if not seleccion.isdigit() or int(seleccion) == 0:
                     continue
 
@@ -271,14 +277,10 @@ def ejecutar():
             titulo = input("Titulo: ").strip()
             descripcion = input("Descripcion: ").strip()
             fecha_evento = input("Fecha del evento (DD-MM-AAAA): ").strip()
-            print("Provincia:")
+            print("\nProvincia:")
             provincias_ordenadas = sorted(PROVINCIAS)
-            bloque_provincias = "\n".join(
-                f"{indice}. {provincia}"
-                for indice, provincia in enumerate(provincias_ordenadas, start=1)
-            )
-            print(f"""{bloque_provincias}""")
-            opcion_provincia = input("Seleccione una provincia: ").strip()
+            imprimir_lista_en_columnas(provincias_ordenadas, columnas=3)
+            opcion_provincia = input("\nSeleccione una provincia: ").strip()
             provincia = None
             if opcion_provincia.isdigit():
                 indice = int(opcion_provincia)
@@ -299,13 +301,10 @@ def ejecutar():
 
             imprimir_salto()
             print(f"Ciudades de {provincia}:")
-            bloque_ciudades = "\n".join(
-                f"{indice}. {ciudad}"
-                for indice, ciudad in enumerate(ciudades, start=1)
-            )
-            print(f"""{bloque_ciudades}""")
+            columnas_ciudades = max(1, (len(ciudades) + 3) // 4)
+            imprimir_lista_en_columnas(ciudades, columnas=columnas_ciudades)
 
-            opcion_ciudad = input("Seleccione una ciudad: ").strip()
+            opcion_ciudad = input("\nSeleccione una ciudad: ").strip()
             ciudad = None
             if opcion_ciudad.isdigit():
                 indice = int(opcion_ciudad)
@@ -319,10 +318,10 @@ def ejecutar():
 
             ciudad_provincia = f"{provincia} - {ciudad}"
 
-            print("Tipo de denuncia:")
+            print("\nTipo de denuncia:")
             for indice, tipo in enumerate(TIPOS_DENUNCIA, start=1):
                 print(f"{indice}. {tipo}")
-            opcion_tipo = input("Seleccione: ").strip()
+            opcion_tipo = input("\nSeleccione: ").strip()
             tipo = None
             if opcion_tipo.isdigit():
                 indice = int(opcion_tipo)
@@ -380,7 +379,7 @@ def ejecutar():
             for indice, denuncia in enumerate(denuncias_buzon, start=1):
                 print(f"{indice}. {denuncia.get('titulo')} | {denuncia.get('estado')}")
 
-            seleccion = input("Seleccione una denuncia (0 para volver): ").strip()
+            seleccion = input("\nSeleccione una denuncia (0 para volver): ").strip()
             if not seleccion.isdigit() or int(seleccion) == 0:
                 continue
 
@@ -435,7 +434,7 @@ def ejecutar():
             print("1. Ultimo dia")
             print("2. Ultima semana")
             print("3. Todo")
-            opcion_periodo = input("Seleccione: ").strip()
+            opcion_periodo = input("\nSeleccione: ").strip()
             if opcion_periodo == "1":
                 periodo = "dia"
             elif opcion_periodo == "2":
